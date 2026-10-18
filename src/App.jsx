@@ -2,7 +2,9 @@
 import { useState } from 'react'
 import { Link, Routes, Route } from 'react-router-dom'
 import './App.css'
-
+import FindDoctors from './FindDoctors.jsx'
+import EmergencyRegistration from './EmergencyRegistration.jsx'
+import DoctorRegistration from './DoctorRegistration.jsx'
 function Home() {
   return (
     <div className="app">
@@ -15,10 +17,11 @@ function Home() {
         <div className="nav-links">
           <a href="#how-it-works">How It Works</a>
           <a href="#about">About</a>
+          <Link to="/doctors">Find Doctors & Clinics</Link>
         </div>
 
         <Link to="/patient" className="nav-button">
-          Get Started ↗
+          Patient Portal ↗
         </Link>
       </nav>
 
@@ -42,9 +45,21 @@ function Home() {
               turn will come.
             </p>
 
-            <Link to="/patient" className="primary-button">
-              Check Your Queue <span>→</span>
-            </Link>
+            
+<div className="hero-actions">
+  <Link to="/patient" className="primary-button">
+    Patient Portal <span>→</span>
+  </Link>
+
+  <Link to="/staff" className="secondary-button">
+    Hospital Staff Portal <span>→</span>
+  </Link>
+
+  <Link to="/doctors" className="secondary-button">
+    Find Doctors & Clinics <span>→</span>
+  </Link>
+</div>
+
 
             <div className="trust-note">
               <span className="status-dot"></span>
@@ -108,6 +123,7 @@ function Home() {
           </div>
         </section>
 
+
         <section className="features" id="how-it-works">
           <div className="section-heading">
             <span className="eyebrow">BUILT AROUND YOU</span>
@@ -144,34 +160,6 @@ function Home() {
                 tokens. Patients cannot self-book.
               </p>
             </article>
-          </div>
-        </section>
-
-        <section className="get-started" id="get-started">
-          <span className="eyebrow">GET STARTED</span>
-          <h2>Choose your experience.</h2>
-          <p>
-            Patients and hospital staff have separate portals.
-          </p>
-
-          <div className="role-grid">
-            <Link to="/patient" className="role-card">
-              <span className="role-symbol">＋</span>
-              <div>
-                <h3>I'm a Patient</h3>
-                <p>View queue information using your clinic code.</p>
-              </div>
-              <span className="role-arrow">→</span>
-            </Link>
-
-            <Link to="/staff" className="role-card">
-              <span className="role-symbol">✚</span>
-              <div>
-                <h3>I'm Hospital Staff</h3>
-                <p>Find your clinic and request staff access.</p>
-              </div>
-              <span className="role-arrow">→</span>
-            </Link>
           </div>
         </section>
       </main>
@@ -251,70 +239,224 @@ function Patient() {
 
 
 
+
 function Staff() {
   const [hospital, setHospital] = useState('')
   const [message, setMessage] = useState('')
+  const [activeSection, setActiveSection] = useState('Overview')
 
-  function handleSearch(event) {
-    event.preventDefault()
-
-    if (hospital.trim().length < 3) {
-      setMessage('Please enter at least 3 characters.')
-      return
-    }
-
-    setMessage(
-      `Search entered for "${hospital.trim()}". Actual clinic search and staff verification will be connected later.`
-    )
-  }
+  const menuItems = [
+    'Overview',
+    'Patient Queue',
+    'Register Patient',
+    'Access Codes & Slots',
+    'Missed Token Policy',
+    'Payments',
+    'Hospital Settings',
+  ]
 
   return (
-    <main className="portal">
-      <Link to="/" className="brand">
-        <span className="brand-icon">Q</span>
-        QueueLess
-      </Link>
+    <main
+      style={{
+        minHeight: '100vh',
+        display: 'flex',
+        background: '#f4f7fb',
+        color: '#172b4d',
+      }}
+    >
+      <aside
+        style={{
+          width: '250px',
+          minWidth: '220px',
+          background: '#102a43',
+          color: 'white',
+          padding: '24px 16px',
+          boxSizing: 'border-box',
+        }}
+      >
+        <Link
+          to="/"
+          style={{
+            color: 'white',
+            textDecoration: 'none',
+            fontSize: '23px',
+            fontWeight: 'bold',
+          }}
+        >
+          QueueLess
+        </Link>
 
-      <section className="portal-card">
-        <span className="eyebrow">HOSPITAL STAFF PORTAL</span>
-        <h1>Find your clinic</h1>
-
-        <p>
-          Search for your hospital or clinic to begin the
-          staff access process.
+        <p style={{ color: '#b8c7d9', fontSize: '13px' }}>
+          HOSPITAL STAFF PORTAL
         </p>
 
-        <form onSubmit={handleSearch}>
-          <label htmlFor="hospital-search">
-            Hospital or clinic name
-          </label>
+        <div style={{ marginTop: '32px' }}>
+          {menuItems.map((item) => (
+            <button
+              key={item}
+              type="button"
+              onClick={() => {
+                setActiveSection(item)
+                setMessage(
+                  item === 'Overview'
+                    ? ''
+                    : `${item} section will be connected next.`
+                )
+              }}
+              style={{
+                display: 'block',
+                width: '100%',
+                padding: '13px 12px',
+                marginBottom: '7px',
+                textAlign: 'left',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                color: 'white',
+                background:
+                  activeSection === item ? '#245b83' : 'transparent',
+              }}
+            >
+              {item}
+            </button>
+          ))}
 
-          <input
-            id="hospital-search"
-            value={hospital}
-            onChange={(event) => {
-              setHospital(event.target.value)
-              setMessage('')
+          <Link
+            to="/staff/emergency"
+            style={{
+              display: 'block',
+              padding: '13px 12px',
+              marginTop: '14px',
+              borderRadius: '8px',
+              background: '#9f3038',
+              color: 'white',
+              textDecoration: 'none',
+              fontWeight: 'bold',
             }}
-            placeholder="e.g. City Care Clinic"
-            required
-          />
+          >
+            🚨 Emergency Registration
+          </Link>
+        </div>
 
-          <button type="submit">Search clinics →</button>
-        </form>
+        <Link
+          to="/"
+          style={{
+            display: 'block',
+            color: '#b8c7d9',
+            marginTop: '32px',
+            textDecoration: 'none',
+          }}
+        >
+          ← Back to homepage
+        </Link>
+      </aside>
 
-        {message && <p className="demo-note">{message}</p>}
+      <section
+        style={{
+          flex: 1,
+          minWidth: 0,
+          padding: '32px',
+        }}
+      >
+        <p style={{ color: '#52677e' }}>QueueLess / Staff Portal</p>
+        <h1 style={{ marginBottom: '8px' }}>{activeSection}</h1>
 
-        <p className="demo-note">
-          Searching does not grant access. Staff must be
-          verified and authorized by the clinic.
+        <p style={{ color: '#52677e' }}>
+          Manage your clinic queue and staff operations.
         </p>
 
-        <Link to="/">← Back to homepage</Link>
+        {message && (
+          <p className="demo-note">{message}</p>
+        )}
+
+        {activeSection === 'Overview' && (
+          <section
+            style={{
+              maxWidth: '600px',
+              background: 'white',
+              padding: '24px',
+              marginTop: '24px',
+              borderRadius: '14px',
+              border: '1px solid #e2e8f0',
+            }}
+          >
+            <h2>Find your clinic</h2>
+
+            <p>
+              Search for your hospital or clinic to begin the
+              staff access process.
+            </p>
+
+            <form
+              onSubmit={(event) => {
+                event.preventDefault()
+
+                if (hospital.trim().length < 3) {
+                  setMessage('Please enter at least 3 characters.')
+                  return
+                }
+
+                setMessage(
+                  `Search entered for "${hospital.trim()}". Actual clinic search and staff verification will be connected later.`
+                )
+              }}
+            >
+              <label
+                htmlFor="hospital-search"
+                style={{ display: 'block', marginBottom: '8px' }}
+              >
+                Hospital or clinic name
+              </label>
+
+              <input
+                id="hospital-search"
+                value={hospital}
+                onChange={(event) => {
+                  setHospital(event.target.value)
+                  setMessage('')
+                }}
+                placeholder="e.g. City Care Clinic"
+                required
+                style={{
+                  width: '100%',
+                  boxSizing: 'border-box',
+                  padding: '12px',
+                  marginBottom: '14px',
+                  border: '1px solid #cbd5e1',
+                  borderRadius: '8px',
+                }}
+              />
+
+              <button type="submit">Search clinics →</button>
+            </form>
+
+            <p className="demo-note">
+              Searching does not grant staff access. Clinic
+              authorization will be required in the real system.
+            </p>
+          </section>
+        )}
+
+        {activeSection !== 'Overview' && (
+          <section
+            style={{
+              marginTop: '24px',
+              padding: '20px',
+              background: 'white',
+              borderRadius: '12px',
+            }}
+          >
+            <p>
+              This dashboard section is a placeholder for now.
+              We will implement its functionality step by step.
+            </p>
+          </section>
+        )}
       </section>
     </main>
   )
 }
+
 
 function App() {
   return (
@@ -322,8 +464,18 @@ function App() {
       <Route path="/" element={<Home />} />
       <Route path="/patient" element={<Patient />} />
       <Route path="/staff" element={<Staff />} />
+      <Route path="/doctors" element={<FindDoctors />} />
+      <Route
+  path="/staff/emergency"
+  element={<EmergencyRegistration />}
+/>
+<Route
+  path="/doctor-register"
+  element={<DoctorRegistration />}
+/>
     </Routes>
   )
 }
 
 export default App
+
