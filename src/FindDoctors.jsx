@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom'
 const doctors = [
   {
     id: 1,
+    doctorCode: 'DOC101',
     initials: 'AS',
     name: 'Dr. Ananya Sharma',
     specialty: 'General Physician',
@@ -19,6 +20,7 @@ const doctors = [
   },
   {
     id: 2,
+    doctorCode: 'DOC102',
     initials: 'RM',
     name: 'Dr. Rahul Menon',
     specialty: 'Dermatology',
@@ -33,6 +35,7 @@ const doctors = [
   },
   {
     id: 3,
+    doctorCode: 'DOC103',
     initials: 'PK',
     name: 'Dr. Priya Kapoor',
     specialty: 'Dentistry',
@@ -47,6 +50,7 @@ const doctors = [
   },
   {
     id: 4,
+    doctorCode: 'DOC104',
     initials: 'SK',
     name: 'Dr. Sameer Khan',
     specialty: 'Pediatrics',
@@ -61,6 +65,7 @@ const doctors = [
   },
   {
     id: 5,
+    doctorCode: 'DOC105',
     initials: 'NA',
     name: 'Dr. Neha Arora',
     specialty: 'ENT',
@@ -140,7 +145,7 @@ function FindDoctors() {
   }, [])
 
   // Only profiles with an Approved status are eligible
-  // for this demo's public directory.
+  // for the public directory.
   const approvedRegisteredDoctors = useMemo(() => {
     return registeredDoctors
       .filter((doctor) => doctor.verificationStatus === 'Approved')
@@ -254,10 +259,11 @@ function FindDoctors() {
       `${clinic}, ${location}, Ghaziabad, India`
     )}`
 
+  
   // Doctor details view
   if (selectedDoctor) {
     return (
-      <main className="directory-page">
+      <main className="directory-page doctor-detail-page">
         <header className="directory-header">
           <Link to="/" className="brand">
             <span className="brand-icon">Q</span>
@@ -269,87 +275,172 @@ function FindDoctors() {
           </button>
         </header>
 
-        <section className="directory-ai">
-          <div
-            className="doctor-avatar"
-            style={{ margin: '0 auto 16px' }}
-          >
-            {selectedDoctor.initials || getInitials(selectedDoctor.name)}
-          </div>
-
-          <span className="sample-label">
-            {selectedDoctor.source === 'registered'
-              ? 'REGISTERED PROFILE · DEMO'
-              : 'SAMPLE DOCTOR PROFILE'}
-          </span>
-
-          <h1>{selectedDoctor.name}</h1>
-
-          <p>
-            {selectedDoctor.specialty} · {selectedDoctor.experience} years
-            of experience
-          </p>
-
-          {selectedDoctor.qualification && (
-            <p>Qualification: {selectedDoctor.qualification}</p>
-          )}
-
-          <p>
-            Languages:{' '}
-            {selectedDoctor.languages.length
-              ? selectedDoctor.languages.join(', ')
-              : 'Not provided'}
-          </p>
-
-          <p>Consultation fee: ₹{selectedDoctor.fee}</p>
-
-          <p>
-            Rating:{' '}
-            {selectedDoctor.rating == null
-              ? 'No ratings yet'
-              : `${Number(selectedDoctor.rating).toFixed(1)} / 5`}
-            {' '}({selectedDoctor.reviews || 0} reviews)
-          </p>
-
-          <h2>Clinic information</h2>
-          <p>{selectedDoctor.clinic}</p>
-          <p>{selectedDoctor.location}, Ghaziabad</p>
-
-          {selectedDoctor.timings && (
-            <p>Consultation timings: {selectedDoctor.timings}</p>
-          )}
-
-          <p>
-            <a
-              href={mapUrl(
-                selectedDoctor.clinic,
-                selectedDoctor.location
-              )}
-              target="_blank"
-              rel="noreferrer"
-            >
-              Get Directions ↗
-            </a>
-          </p>
-
-          <div style={{ marginTop: 24 }}>
-            <Link to="/patient" className="primary-button">
-              How to Join the Queue →
-            </Link>
-          </div>
-
+        <div className="doctor-detail-container">
           <button
             type="button"
-            className="reset-filters"
-            style={{ marginTop: 20 }}
+            className="doctor-detail-back"
             onClick={closeDetails}
           >
-            Back to all doctors
+            ← All doctors
           </button>
-        </section>
+
+          <section className="doctor-profile-hero">
+            <div className="doctor-profile-top">
+              <div className="doctor-profile-avatar">
+                {selectedDoctor.initials || getInitials(selectedDoctor.name)}
+              </div>
+
+              <div className="doctor-profile-heading">
+                <span className="doctor-profile-label">
+                  {selectedDoctor.source === 'registered'
+                    ? 'REGISTERED DOCTOR'
+                    : 'DOCTOR PROFILE'}
+                </span>
+
+                <h1>{selectedDoctor.name}</h1>
+                <p className="doctor-profile-specialty">
+                  {selectedDoctor.specialty}
+                </p>
+
+                {selectedDoctor.doctorCode && (
+                  <span className="doctor-code-pill">
+                    ID: {selectedDoctor.doctorCode}
+                  </span>
+                )}
+              </div>
+            </div>
+
+            <div className="doctor-highlight-grid">
+              <article className="doctor-highlight-card">
+                <span className="doctor-highlight-icon">✚</span>
+                <span className="doctor-highlight-label">Experience</span>
+                <strong>{selectedDoctor.experience} years</strong>
+                <small>Medical practice</small>
+              </article>
+
+              <article className="doctor-highlight-card">
+                <span className="doctor-highlight-icon">₹</span>
+                <span className="doctor-highlight-label">Consultation</span>
+                <strong>₹{selectedDoctor.fee}</strong>
+                <small>Per consultation</small>
+              </article>
+
+              <article className="doctor-highlight-card">
+                <span className="doctor-highlight-icon">★</span>
+                <span className="doctor-highlight-label">Patient rating</span>
+                <strong>
+                  {selectedDoctor.rating == null
+                    ? '—'
+                    : Number(selectedDoctor.rating).toFixed(1) + ' / 5'}
+                </strong>
+                <small>
+                  {selectedDoctor.rating == null
+                    ? 'No ratings yet'
+                    : `${selectedDoctor.reviews || 0} reviews`}
+                </small>
+              </article>
+            </div>
+          </section>
+
+          <section className="doctor-detail-info-grid">
+            <article className="doctor-detail-panel">
+              <div className="doctor-detail-panel-heading">
+                <span className="doctor-detail-panel-icon">▤</span>
+                <div>
+                  <h2>Professional information</h2>
+                  <p>Qualifications and expertise</p>
+                </div>
+              </div>
+
+              <div className="doctor-detail-row">
+                <span>Specialty</span>
+                <strong>{selectedDoctor.specialty || 'Not provided'}</strong>
+              </div>
+
+              <div className="doctor-detail-row">
+                <span>Qualification</span>
+                <strong>
+                  {selectedDoctor.qualification || 'Not provided'}
+                </strong>
+              </div>
+
+              <div className="doctor-detail-row">
+                <span>Experience</span>
+                <strong>{selectedDoctor.experience} years</strong>
+              </div>
+
+              <div className="doctor-detail-row">
+                <span>Languages</span>
+                <strong>
+                  {selectedDoctor.languages?.length
+                    ? selectedDoctor.languages.join(', ')
+                    : 'Not provided'}
+                </strong>
+              </div>
+            </article>
+
+            <article className="doctor-detail-panel doctor-clinic-panel">
+              <div className="doctor-detail-panel-heading">
+                <span className="doctor-detail-panel-icon">⌖</span>
+                <div>
+                  <h2>Clinic information</h2>
+                  <p>Location and consultation details</p>
+                </div>
+              </div>
+
+              <h3 className="doctor-clinic-name">
+                {selectedDoctor.clinic || 'Clinic information unavailable'}
+              </h3>
+
+              <p className="doctor-clinic-address">
+                <span>⌖</span>
+                {selectedDoctor.location
+                  ? `${selectedDoctor.location}, Ghaziabad`
+                  : 'Address not provided'}
+              </p>
+
+              {selectedDoctor.timings && (
+                <div className="doctor-clinic-timing">
+                  <span>◷</span>
+                  <div>
+                    <small>Consultation timings</small>
+                    <strong>{selectedDoctor.timings}</strong>
+                  </div>
+                </div>
+              )}
+
+              <a
+                className="doctor-directions-button"
+                href={mapUrl(
+                  selectedDoctor.clinic,
+                  selectedDoctor.location
+                )}
+                target="_blank"
+                rel="noreferrer"
+              >
+                Get directions ↗
+              </a>
+            </article>
+          </section>
+
+          <section className="doctor-queue-cta">
+            <div>
+              <span className="doctor-queue-eyebrow">YOUR NEXT STEP</span>
+              <h2>Ready to visit the clinic?</h2>
+              <p>
+                Check the queue information before planning your visit.
+              </p>
+            </div>
+
+            <Link to="/patient" className="doctor-queue-button">
+              View Queue Information →
+            </Link>
+          </section>
+        </div>
       </main>
     )
   }
+
 
   // Clinic details view
   if (selectedClinic) {
@@ -408,6 +499,13 @@ function FindDoctors() {
                 </div>
 
                 <h3>{doctor.name}</h3>
+
+                {doctor.doctorCode && (
+                  <p>
+                    Doctor Code: <strong>{doctor.doctorCode}</strong>
+                  </p>
+                )}
+
                 <p>{doctor.specialty}</p>
                 <p>Experience: {doctor.experience} years</p>
                 <p>Consultation fee: ₹{doctor.fee}</p>
@@ -452,23 +550,7 @@ function FindDoctors() {
       </header>
 
       <section className="directory-hero">
-        <span className="eyebrow">YOUR HEALTH, YOUR CHOICE</span>
         <h1>Find Doctors & Clinics</h1>
-
-        <div style={{ margin: '16px 0 24px' }}>
-          <p>
-            Are you a doctor? Join QueueLess and register your clinic.
-          </p>
-
-          <Link to="/doctor-register" className="nav-button">
-            Register as a Doctor →
-          </Link>
-        </div>
-
-        <p>
-          Discover healthcare professionals, compare consultation
-          fees and find a clinic that works for you.
-        </p>
 
         <input
           className="directory-search"
@@ -477,10 +559,6 @@ function FindDoctors() {
           placeholder="Search doctor, clinic, specialty or location..."
           aria-label="Search doctors and clinics"
         />
-
-        <span className="sample-label">
-          Demo directory · Sample and locally registered profiles
-        </span>
       </section>
 
       <section className="directory-content" id="doctors">
@@ -587,6 +665,12 @@ function FindDoctors() {
                   </div>
 
                   <h3>{doctor.name}</h3>
+
+                  {doctor.doctorCode && (
+                    <p>
+                      Doctor Code: <strong>{doctor.doctorCode}</strong>
+                    </p>
+                  )}
 
                   <p className="doctor-specialty">
                     {doctor.specialty} · {doctor.experience} yrs
